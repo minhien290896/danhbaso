@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Bạ Số | Mặt Trận Tổ Quốc - Phường Phú Định</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#0f4c81',
+                            800: '#0f3a61',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800 antialiased selection:bg-sky-100 selection:text-sky-800">
+
+    <!-- 1. HEADER -->
+    <header class="bg-gradient-to-r from-brand-700 to-brand-600 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-full bg-white/10 border-2 border-white/30 flex items-center justify-center shadow-inner backdrop-blur-sm">
+                    <i class="fa-solid fa-users-rectangle text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-wide leading-tight uppercase">DANH BẠ SỐ ĐIỆN TỬ</h1>
+                    <p class="text-xs sm:text-sm text-sky-100 font-light">Ban Công tác Mặt trận · Phường Phú Định</p>
+                </div>
+            </div>
+
+            <!-- Header Right: Auth state -->
+            <div class="flex items-center space-x-3">
+                <span id="admin-badge" class="hidden bg-emerald-500/30 border border-emerald-300 text-emerald-100 text-xs px-3 py-1.5 rounded-lg font-medium">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Quản trị: danhbaso.io.vn
+                </span>
+                <button id="btn-change-pass" onclick="openChangePassModal()" class="hidden bg-white/15 hover:bg-white/25 text-white font-medium text-xs sm:text-sm px-3 py-2 rounded-lg transition-all border border-white/20 backdrop-blur-sm shadow-sm flex items-center space-x-1.5">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Đổi mật khẩu</span>
+                </button>
+                <button id="auth-btn" onclick="handleAuthClick()" class="bg-white/15 hover:bg-white/25 text-white font-medium text-xs sm:text-sm px-4 py-2 rounded-lg transition-all border border-white/20 backdrop-blur-sm shadow-sm flex items-center space-x-2">
+                    <i class="fa-regular fa-user" id="auth-icon"></i>
+                    <span id="auth-text">Đăng nhập quản trị</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+        <!-- 2. TIÊU ĐỀ & THÔNG BÁO -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-900 mb-1">Danh bạ liên hệ Mặt trận</h2>
+            <p class="text-sm text-slate-500 mb-4">Tra cứu thông tin Ủy ban MTTQ Việt Nam phường và Ban Công tác Mặt trận các khu phố.</p>
+        </div>
+
+        <!-- 3. THỐNG KÊ NHANH -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <span class="text-sm font-medium text-slate-500">Tổng liên hệ</span>
+                <span id="stat-total" class="text-3xl font-extrabold text-brand-700 mt-2">0</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <span class="text-sm font-medium text-slate-500">Đơn vị Mặt trận</span>
+                <span id="stat-units" class="text-3xl font-extrabold text-brand-700 mt-2">0</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <span class="text-sm font-medium text-slate-500">Kết quả tìm kiếm</span>
+                <span id="stat-search-results" class="text-3xl font-extrabold text-brand-700 mt-2">0</span>
+            </div>
+        </div>
+
+        <!-- 4. BỐ CỤC 2 CỘT CHÍNH -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- CỘT TRÁI -->
+            <section class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 sm:p-5 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-800">Danh sách Cán bộ</h3>
+                    <button id="btn-add-new" onclick="openAddModal()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex items-center space-x-1.5 shadow-sm">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Thêm mới</span>
+                    </button>
+                </div>
+
+                <div class="relative mb-3">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" placeholder="Tìm theo tên, số điện thoại, chức vụ..." 
+                           class="w-full pl-10 pr-4 py-2.5 bg-slate-50 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <select id="filter-unit" class="bg-slate-50 text-slate-700 text-xs sm:text-sm border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer">
+                        <option value="">Tất cả đơn vị</option>
+                    </select>
+                    <select id="filter-role" class="bg-slate-50 text-slate-700 text-xs sm:text-sm border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer">
+                        <option value="">Tất cả chức vụ</option>
+                    </select>
+                </div>
+
+                <div id="contact-list" class="space-y-3 max-h-[520px] overflow-y-auto pr-1 custom-scroll"></div>
+            </section>
+
+            <!-- CỘT PHẢI -->
+            <section class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 sm:p-6 sticky top-6">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800">Hồ sơ cán bộ Mặt trận</h3>
+                    <div class="flex items-center space-x-2">
+                        <button id="btn-delete-contact" onclick="deleteCurrentContact()" class="hidden bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Xóa hồ sơ</span>
+                        </button>
+                        <span class="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-md">Chi tiết</span>
+                    </div>
+                </div>
+
+                <div id="detail-card-content">
+                    <div class="flex items-start space-x-4 mb-6">
+                        <div id="detail-avatar" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-sky-100 text-brand-600 font-bold text-2xl sm:text-3xl flex items-center justify-center flex-shrink-0 shadow-sm border border-sky-200">
+                            M
+                        </div>
+                        <div class="pt-1">
+                            <h2 id="detail-name" class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">--</h2>
+                            <p id="detail-role" class="text-sm font-medium text-slate-600 mt-1">--</p>
+                            <div class="mt-2 inline-block">
+                                <span id="detail-unit" class="bg-sky-50 text-brand-600 text-xs font-semibold px-2.5 py-1 rounded-lg border border-sky-100">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 py-4 border-t border-b border-slate-100 text-sm">
+                        <div class="grid grid-cols-12 items-center">
+                            <span class="col-span-4 text-slate-500 font-medium">Đơn vị trực thuộc</span>
+                            <span id="detail-unit-full" class="col-span-8 font-semibold text-slate-800">--</span>
+                        </div>
+                        <div class="grid grid-cols-12 items-center">
+                            <span class="col-span-4 text-slate-500 font-medium">Số điện thoại</span>
+                            <span id="detail-phone" class="col-span-8 font-semibold text-slate-800">--</span>
+                        </div>
+                        <div class="grid grid-cols-12 items-center">
+                            <span class="col-span-4 text-slate-500 font-medium">Email</span>
+                            <span id="detail-email" class="col-span-8 text-slate-700">--</span>
+                        </div>
+                        <div class="grid grid-cols-12 items-center">
+                            <span class="col-span-4 text-slate-500 font-medium">Địa chỉ công tác</span>
+                            <span id="detail-address" class="col-span-8 text-slate-700">--</span>
+                        </div>
+                        <div class="grid grid-cols-12 items-center">
+                            <span class="col-span-4 text-slate-500 font-medium">Ghi chú</span>
+                            <span id="detail-note" class="col-span-8 text-slate-700">--</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex flex-wrap sm:flex-nowrap gap-3">
+                        <a id="btn-call" href="#" class="w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-5 rounded-xl transition-all shadow-sm hover:shadow flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-phone"></i>
+                            <span>Gọi điện</span>
+                        </a>
+                        <a id="btn-sms" href="#" class="w-full sm:w-auto flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold py-3 px-5 rounded-xl border border-emerald-200 transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-regular fa-comment-dots text-lg"></i>
+                            <span>Nhắn tin</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 Danh Bạ Số Điện Tử - Ủy ban Mặt trận Tổ quốc Việt Nam Phường Phú Định.</p>
+    </footer>
+
+    <!-- MODAL ĐĂNG NHẬP -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-slate-100">
+            <div class="bg-brand-700 px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-lock mr-2"></i> Đăng nhập quản trị viên</h3>
+                <button onclick="closeLoginModal()" class="text-white/80 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tài khoản</label>
+                    <input type="text" id="login-user" value="danhbaso.io.vn" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mật khẩu</label>
+                    <input type="password" id="login-pass" placeholder="Nhập mật khẩu" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="pt-2 flex space-x-3">
+                    <button onclick="closeLoginModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all">Hủy</button>
+                    <button onclick="submitLogin()" class="flex-1 bg-brand-700 hover:bg-brand-800 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-sm">Đăng nhập</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐỔI MẬT KHẨU -->
+    <div id="change-pass-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden border border-slate-100">
+            <div class="bg-brand-700 px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-key mr-2"></i> Đổi mật khẩu quản trị</h3>
+                <button onclick="closeChangePassModal()" class="text-white/80 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mật khẩu hiện tại</label>
+                    <input type="password" id="current-pass" placeholder="Mật khẩu hiện tại" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mật khẩu mới</label>
+                    <input type="password" id="new-pass" placeholder="Mật khẩu mới" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirm-pass" placeholder="Nhập lại mật khẩu mới" class="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="pt-2 flex space-x-3">
+                    <button onclick="closeChangePassModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all">Hủy</button>
+                    <button onclick="submitChangePass()" class="flex-1 bg-brand-700 hover:bg-brand-800 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-sm">Lưu mật khẩu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM MỚI CÁN BỘ -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden border border-slate-100">
+            <div class="bg-brand-700 px-6 py-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-user-plus mr-2"></i> Thêm cán bộ Mặt trận mới</h3>
+                <button onclick="closeAddModal()" class="text-white/80 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-3.5 max-h-[75vh] overflow-y-auto custom-scroll">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Họ và tên *</label>
+                    <input type="text" id="add-name" placeholder="Ví dụ: Nguyễn Văn A" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Chức vụ *</label>
+                        <input type="text" id="add-role" placeholder="Ví dụ: Trưởng ban CTMT" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Đơn vị *</label>
+                        <input type="text" id="add-unit" placeholder="Ví dụ: Ban CTMT Khu phố 1" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Số điện thoại *</label>
+                        <input type="text" id="add-phone" placeholder="0900000000" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
+                        <input type="text" id="add-email" placeholder="email@phuphudinh.gov.vn" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Địa chỉ công tác</label>
+                    <input type="text" id="add-address" placeholder="Phường Phú Định" class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Ghi chú</label>
+                    <input type="text" id="add-note" placeholder="Thông tin bổ sung..." class="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div class="pt-3 flex space-x-3">
+                    <button onclick="closeAddModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition-all">Hủy</button>
+                    <button onclick="saveNewContact()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-all shadow-sm">Thêm vào danh bạ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK & APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // === THAY THẾ ĐOẠN CONFIG NÀY BẰNG FIREBASE CONFIG CỦA BẠN ===
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Khởi tạo Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.isAdmin = false;
+        window.adminPassword = localStorage.getItem('admin_pass') || '123456';
+        window.contactsData = [];
+        window.selectedContactId = null;
+        window.filteredContacts = [];
+
+        // Tải dữ liệu từ Firestore
+        async function fetchContactsFromFirebase() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "contacts"));
+                window.contactsData = [];
+                querySnapshot.forEach((docSnap) => {
+                    window.contactsData.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                if (window.contactsData.length === 0) {
+                    // Nếu dữ liệu trên cloud trống, tạo dữ liệu mẫu ban đầu
+                    const initialData = [
+                        { name: "Trần Thị Mai", role: "Trưởng ban Công tác Mặt trận", unit: "Ban CTMT Khu phố 15", phone: "0900000002", email: "mai.tran@phuphudinh.gov.vn", address: "Khu phố 15, Phường Phú Định", note: "Phụ trách Mặt trận Khu phố 15" },
+                        { name: "Nguyễn Văn Hùng", role: "Chủ tịch Ủy ban MTTQ", unit: "Ủy ban MTTQ Phường", phone: "0900000001", email: "hung.nguyen@phuphudinh.gov.vn", address: "Trụ sở UBND Phường Phú Định", note: "Phụ trách chung công tác Mặt trận" }
+                    ];
+                    for (let item of initialData) {
+                        await addDoc(collection(db, "contacts"), item);
+                    }
+                    return fetchContactsFromFirebase();
+                }
+
+                initFilters();
+                filterContacts();
+                if (window.filteredContacts.length > 0) {
+                    selectContact(window.filteredContacts[0].id);
+                }
+            } catch (error) {
+                console.error("Lỗi tải dữ liệu từ Firebase: ", error);
+            }
+        }
+
+        function getInitialLetter(fullName) {
+            if (!fullName) return '';
+            const nameParts = fullName.trim().split(' ');
+            const lastName = nameParts[nameParts.length - 1];
+            return lastName.charAt(0).toUpperCase();
+        }
+
+        window.initFilters = function() {
+            const unitSelect = document.getElementById('filter-unit');
+            const roleSelect = document.getElementById('filter-role');
+
+            const units = [...new Set(window.contactsData.map(c => c.unit))];
+            const roles = [...new Set(window.contactsData.map(c => c.role))];
+
+            unitSelect.innerHTML = '<option value="">Tất cả đơn vị</option>';
+            roleSelect.innerHTML = '<option value="">Tất cả chức vụ</option>';
+
+            units.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit;
+                option.textContent = unit;
+                unitSelect.appendChild(option);
+            });
+
+            roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role;
+                option.textContent = role;
+                roleSelect.appendChild(option);
+            });
+        }
+
+        window.updateStats = function() {
+            document.getElementById('stat-total').textContent = window.contactsData.length;
+            const uniqueUnits = new Set(window.contactsData.map(c => c.unit)).size;
+            document.getElementById('stat-units').textContent = uniqueUnits;
+            document.getElementById('stat-search-results').textContent = window.filteredContacts.length;
+        }
+
+        window.renderContactList = function() {
+            const listContainer = document.getElementById('contact-list');
+            listContainer.innerHTML = '';
+
+            if (window.filteredContacts.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="p-8 text-center text-slate-400">
+                        <i class="fa-regular fa-folder-open text-3xl mb-2"></i>
+                        <p class="text-sm">Không tìm thấy cán bộ phù hợp</p>
+                    </div>
+                `;
+                return;
+            }
+
+            window.filteredContacts.forEach(contact => {
+                const isSelected = contact.id === window.selectedContactId;
+                const initial = getInitialLetter(contact.name);
+
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-xl cursor-pointer transition-all border ${
+                    isSelected 
+                        ? 'bg-sky-50/70 border-sky-300 ring-1 ring-sky-300 shadow-sm' 
+                        : 'bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/50'
+                }`;
+
+                card.onclick = () => selectContact(contact.id);
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-sky-100 text-brand-600 font-bold text-base flex items-center justify-center flex-shrink-0">
+                            ${initial}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-bold text-slate-900 truncate">${contact.name}</h4>
+                            <p class="text-xs text-slate-500 truncate mt-0.5">${contact.role} · ${contact.unit}</p>
+                            <p class="text-xs font-semibold text-brand-600 mt-1 flex items-center space-x-1">
+                                <i class="fa-solid fa-phone text-[10px]"></i>
+                                <span>${contact.phone}</span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        window.selectContact = function(id) {
+            window.selectedContactId = id;
+            const contact = window.contactsData.find(c => c.id === id);
+            
+            if (!contact) return;
+
+            window.renderContactList();
+
+            const initial = getInitialLetter(contact.name);
+            document.getElementById('detail-avatar').textContent = initial;
+            document.getElementById('detail-name').textContent = contact.name;
+            document.getElementById('detail-role').textContent = contact.role;
+            document.getElementById('detail-unit').textContent = contact.unit;
+            document.getElementById('detail-unit-full').textContent = contact.unit;
+            document.getElementById('detail-phone').textContent = contact.phone;
+            document.getElementById('detail-email').textContent = contact.email || 'Chưa cập nhật';
+            document.getElementById('detail-address').textContent = contact.address || 'Phường Phú Định';
+            document.getElementById('detail-note').textContent = contact.note || 'Không có ghi chú';
+
+            document.getElementById('btn-call').href = `tel:${contact.phone}`;
+            document.getElementById('btn-sms').href = `sms:${contact.phone}`;
+        }
+
+        window.filterContacts = function() {
+            const searchValue = document.getElementById('search-input').value.toLowerCase().trim();
+            const selectedUnit = document.getElementById('filter-unit').value;
+            const selectedRole = document.getElementById('filter-role').value;
+
+            window.filteredContacts = window.contactsData.filter(contact => {
+                const matchesSearch = contact.name.toLowerCase().includes(searchValue) ||
+                                      contact.phone.includes(searchValue) ||
+                                      contact.role.toLowerCase().includes(searchValue) ||
+                                      contact.unit.toLowerCase().includes(searchValue);
+                
+                const matchesUnit = selectedUnit === "" || contact.unit === selectedUnit;
+                const matchesRole = selectedRole === "" || contact.role === selectedRole;
+
+                return matchesSearch && matchesUnit && matchesRole;
+            });
+
+            if (window.filteredContacts.length > 0 && !window.filteredContacts.some(c => c.id === window.selectedContactId)) {
+                window.selectedContactId = window.filteredContacts[0].id;
+            }
+
+            window.updateStats();
+            window.renderContactList();
+            if (window.filteredContacts.length > 0) {
+                window.selectContact(window.selectedContactId);
+            }
+        }
+
+        window.handleAuthClick = function() {
+            if (window.isAdmin) {
+                if (confirm("Bạn có muốn đăng xuất khỏi tài khoản quản trị?")) {
+                    window.isAdmin = false;
+                    window.updateAdminUI();
+                    showToast("Đã đăng xuất tài khoản quản trị.");
+                }
+            } else {
+                document.getElementById('login-modal').classList.remove('hidden');
+            }
+        }
+
+        window.closeLoginModal = function() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        window.submitLogin = function() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (user === 'danhbaso.io.vn' && pass === window.adminPassword) {
+                window.isAdmin = true;
+                window.closeLoginModal();
+                window.updateAdminUI();
+                showToast("Đăng nhập quản trị thành công!");
+                document.getElementById('login-pass').value = '';
+            } else {
+                alert("Sai tài khoản hoặc mật khẩu!");
+            }
+        }
+
+        window.openChangePassModal = function() {
+            document.getElementById('change-pass-modal').classList.remove('hidden');
+        }
+
+        window.closeChangePassModal = function() {
+            document.getElementById('change-pass-modal').classList.add('hidden');
+        }
+
+        window.submitChangePass = function() {
+            const currentPass = document.getElementById('current-pass').value.trim();
+            const newPass = document.getElementById('new-pass').value.trim();
+            const confirmPass = document.getElementById('confirm-pass').value.trim();
+
+            if (currentPass !== window.adminPassword) {
+                alert("Mật khẩu hiện tại không chính xác!");
+                return;
+            }
+            if (newPass !== confirmPass) {
+                alert("Mật khẩu mới không khớp!");
+                return;
+            }
+
+            window.adminPassword = newPass;
+            localStorage.setItem('admin_pass', window.adminPassword);
+            window.closeChangePassModal();
+            showToast("Đổi mật khẩu thành công!");
+        }
+
+        window.updateAdminUI = function() {
+            const authBtn = document.getElementById('auth-btn');
+            const authText = document.getElementById('auth-text');
+            const authIcon = document.getElementById('auth-icon');
+            const adminBadge = document.getElementById('admin-badge');
+            const btnChangePass = document.getElementById('btn-change-pass');
+            const btnAddNew = document.getElementById('btn-add-new');
+            const btnDeleteContact = document.getElementById('btn-delete-contact');
+
+            if (window.isAdmin) {
+                authText.textContent = "Đăng xuất";
+                authIcon.className = "fa-solid fa-right-from-bracket";
+                authBtn.className = "bg-rose-600/80 hover:bg-rose-600 text-white font-medium text-xs sm:text-sm px-4 py-2 rounded-lg transition-all border border-rose-400/30 backdrop-blur-sm shadow-sm flex items-center space-x-2";
+                adminBadge.classList.remove('hidden');
+                btnChangePass.classList.remove('hidden');
+                btnAddNew.classList.remove('hidden');
+                btnDeleteContact.classList.remove('hidden');
+            } else {
+                authText.textContent = "Đăng nhập quản trị";
+                authIcon.className = "fa-regular fa-user";
+                authBtn.className = "bg-white/15 hover:bg-white/25 text-white font-medium text-xs sm:text-sm px-4 py-2 rounded-lg transition-all border border-white/20 backdrop-blur-sm shadow-sm flex items-center space-x-2";
+                adminBadge.classList.add('hidden');
+                btnChangePass.classList.add('hidden');
+                btnAddNew.classList.add('hidden');
+                btnDeleteContact.classList.add('hidden');
+            }
+        }
+
+        window.openAddModal = function() {
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        window.closeAddModal = function() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        // Thêm cán bộ mới lên Firestore
+        window.saveNewContact = async function() {
+            const name = document.getElementById('add-name').value.trim();
+            const role = document.getElementById('add-role').value.trim();
+            const unit = document.getElementById('add-unit').value.trim();
+            const phone = document.getElementById('add-phone').value.trim();
+            const email = document.getElementById('add-email').value.trim();
+            const address = document.getElementById('add-address').value.trim();
+            const note = document.getElementById('add-note').value.trim();
+
+            if (!name || !role || !unit || !phone) {
+                alert("Vui lòng điền đầy đủ các thông tin bắt buộc!");
+                return;
+            }
+
+            const newContact = {
+                name,
+                role,
+                unit,
+                phone,
+                email: email || "Chưa cập nhật",
+                address: address || "Phường Phú Định",
+                note: note || "Cán bộ Mặt trận"
+            };
+
+            try {
+                await addDoc(collection(db, "contacts"), newContact);
+                closeAddModal();
+                showToast("Đã thêm cán bộ mới thành công lên đám mây!");
+                fetchContactsFromFirebase();
+            } catch (error) {
+                console.error("Lỗi khi thêm: ", error);
+                alert("Có lỗi xảy ra khi lưu lên Firebase.");
+            }
+        }
+
+        // Xóa cán bộ khỏi Firestore
+        window.deleteCurrentContact = async function() {
+            const contact = window.contactsData.find(c => c.id === window.selectedContactId);
+            if (!contact) return;
+
+            if (confirm(`Bạn có chắc chắn muốn xóa hồ sơ của cán bộ "${contact.name}" không?`)) {
+                try {
+                    await deleteDoc(doc(db, "contacts", contact.id));
+                    showToast("Đã xóa hồ sơ thành công.");
+                    fetchContactsFromFirebase();
+                } catch (error) {
+                    console.error("Lỗi khi xóa: ", error);
+                    alert("Không thể xóa dữ liệu.");
+                }
+            }
+        }
+
+        function showToast(message) {
+            let toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-800 text-white text-sm px-4 py-3 rounded-xl shadow-lg z-50 transition-opacity duration-300 flex items-center space-x-2';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info text-sky-400"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchContactsFromFirebase();
+
+            document.getElementById('search-input').addEventListener('input', window.filterContacts);
+            document.getElementById('filter-unit').addEventListener('change', window.filterContacts);
+            document.getElementById('filter-role').addEventListener('change', window.filterContacts);
+        });
+    </script>
+</body>
+</html>
